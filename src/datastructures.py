@@ -26,8 +26,14 @@ class FamilyStructure:
         return generated_id
 
     def add_member(self, member):
-        ## You have to implement this method
+        
+        if "id" not in member or member["id"] is None:
+            #si el id no existe o es None, generamos uno nuevo
+            member["id"] = self._generate_id()
+        # para asegurar que el mienbro tiene el apellido de la familia
+        member["last_name"] = self.last_name
         ## Append the member to the list of _members
+        self._members.append(member)
         pass
 
     def delete_member(self, id):
