@@ -30,35 +30,28 @@ def sitemap():
 
 
 @app.route('/members', methods=['GET'])
-def handle_hello():
-    # This is how you can use the Family datastructure by calling its methods
-    members = jackson_family.get_all_members()
-    response_body = {"hello": "world",
-                     "family": members}
-    return jsonify(response_body), 200
-
-@app.route('/members', methods=['POST'])
-def create_member():
-    data = request.get_json()
-    new_member = {
-        "id": data.get("id"),
-        "first_name": data.get("first_name"),
-        "age": data.get("age"),
-        "lucky_numbers": data.get("lucky_numbers", [])
-    }
-    jackson_family.append(new_member)
-    return jsonify({"msg": "Miembro agregado", "member": new_member}), 200
+def get_all_members():
+    return jsonify(jackson_family.get_all_members()), 200
 
 @app.route('/members/<int:member_id>', methods=['GET'])
-def delete_member(member, id):
+def get_member(member_id):
     member = jackson_family.get_member(member_id)
     if member is None or member_id < 0:
         return jsonify({"msg": "Miembro no encontrado"}, 404)
     return jsonify(member), 200
 
-@app.route('')
+@app.route('/members', methods=['POST'])
+def add_member():
+    member_data = request.get_json()
+    new_member = jackson_family.add_member(member_data)
+    return jsonify(new_member), 200 
 
-
+@app.route('/members/<int:member_id>', methods=['DELETE'])
+def delete_member(member_id):
+    removed_member = jackson_family.delete_member(member_id)
+    if removed_member is None:
+        return jsonify({"error": "Miembro no encontrado", "done": False}), 404
+    return jsonify({"msg": "Miembro eliminado", "done": True, "member": removed_member}), 200
 
 # This only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
